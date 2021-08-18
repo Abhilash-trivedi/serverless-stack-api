@@ -11,15 +11,33 @@ plugins:
   - serverless-dotenv-plugin # Load .env as environment variables
 
 provider:
-  name: aws
-  runtime: nodejs12.x 
-  stage: prod 
-  region: us-east-1
+    name: aws
+    runtime: nodejs12.x 
+    stage: prod 
+    region: us-east-2
+
+    environment:
+      tableName: notes
+
+
+    iamRoleStatements:
+      - Effect: Allow 
+        Action:
+          - dynamodb:Scan
+          - dynamodb:Query 
+          - dynamodb:GetItem 
+          - dynamodb:PutItem
+          - dynamodb:UpdateItem
+          - dynamodb:DeleteItem
+          - dynamodb:DescribeTable
+        Resource: "arn:aws:dynamodb:us-east-1:*:*"
 
 functions:
-  hello:
-    handler: handler.hello
-    events:
-      - http:
-          path: hello
-          method: get
+# Defines an HTTP API endpoint that calls the main function in create.js # - path: url path is /notes
+# - method: POST request
+  create:
+      handler: create.main 
+      events:
+        - http:
+            path: notes
+            method: post
